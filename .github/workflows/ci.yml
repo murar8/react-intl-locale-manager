@@ -20,12 +20,6 @@ jobs:
         run: echo "::set-output name=dir::$(yarn cache dir)"
         id: yarn-cache-dir
 
-      - name: Restore yarn cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: yarn-cache
-
       - name: Restore node_modules
         uses: actions/cache@v1
         id: node_modules-cache
@@ -33,6 +27,13 @@ jobs:
           path: node_modules
           key: node_modules-cache-${{ hashFiles('**/yarn.lock') }}
           restore-key: node_modules-cache-
+
+      - name: Restore yarn cache
+        uses: actions/cache@v1
+        if: "!steps.node_modules-cache.outputs.cache-hit"
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: yarn-cache
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
@@ -87,12 +88,6 @@ jobs:
         run: echo "::set-output name=dir::$(yarn cache dir)"
         id: yarn-cache-dir
 
-      - name: Restore yarn cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: yarn-cache-${{ runner.os }}
-
       - name: Restore node_modules
         uses: actions/cache@v1
         id: node_modules-cache
@@ -100,6 +95,13 @@ jobs:
           path: node_modules
           key: node_modules-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-key: node_modules-cache-${{ runner.os }}-
+
+      - name: Restore yarn cache
+        uses: actions/cache@v1
+        if: "!steps.node_modules-cache.outputs.cache-hit"
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: yarn-cache-${{ runner.os }}
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
