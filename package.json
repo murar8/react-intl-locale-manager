@@ -30,7 +30,7 @@
   "dependencies": {
     "@babel/core": "^7.9.0",
     "babel-plugin-react-intl": "^7.1.0",
-    "chalk": "^3.0.0",
+    "chalk": "^4.0.0",
     "commander": "^5.0.0",
     "commitlint": "^8.3.5",
     "fs-extra": "^9.0.0",
