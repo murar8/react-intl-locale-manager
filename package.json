@@ -1,0 +1,111 @@
+{
+  "private": false,
+  "name": "react-intl-manager",
+  "version": "1.0.0",
+  "description": "Manage the translation process of projects that use the 'react-intl' translation library.",
+  "repository": "https://github.com/murar8/react-intl-manager",
+  "author": "Lorenzo Murarotto <lnzmrr@gmail.com>",
+  "license": "MIT",
+  "bin": {
+    "intl-manager": "bin/intl-manager"
+  },
+  "files": [
+    "bin",
+    "build"
+  ],
+  "engines": {
+    "node": ">= 10"
+  },
+  "scripts": {
+    "commit": "git-cz",
+    "build": "tsc -p tsconfig.build.json",
+    "build:readme": "scripts/build_readme.js",
+    "test:unit": "jest --coverage ./src",
+    "test:integration": "jest ./test",
+    "lint:eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
+    "lint:prettier": "prettier .",
+    "build:watch": "yarn build --watch",
+    "test:unit:watch": "yarn test:unit --no-coverage --watch"
+  },
+  "dependencies": {
+    "@babel/core": "^7.9.0",
+    "babel-plugin-react-intl": "^7.1.0",
+    "chalk": "^3.0.0",
+    "commander": "^5.0.0",
+    "commitlint": "^8.3.5",
+    "fs-extra": "^9.0.0",
+    "globby": "^11.0.0",
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "@commitlint/config-angular": "^8.3.4",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/git": "^9.0.0",
+    "@types/commander": "^2.12.2",
+    "@types/fs-extra": "^8.1.0",
+    "@types/jest": "^25.1.4",
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^13.9.8",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "cz-conventional-changelog": "3.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "husky": "^4.2.3",
+    "jest": "^25.2.4",
+    "lint-staged": "^10.1.1",
+    "prettier": "^2.0.2",
+    "semantic-release": "^17.0.4",
+    "ts-jest": "^25.3.0",
+    "typescript": "^3.8.3"
+  },
+  "peerDependencies": {
+    "react-intl": "^4.3.1"
+  },
+  "prettier": {
+    "arrowParens": "avoid"
+  },
+  "lint-staged": {
+    "./**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write"
+    ],
+    "./**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-angular"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/github",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "README.md",
+            "CHANGELOG.md",
+            "package.json"
+          ]
+        }
+      ]
+    ]
+  }
+}

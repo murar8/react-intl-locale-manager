@@ -1,0 +1,125 @@
+name: CI
+
+env: { CI: true }
+
+on:
+  push: { branches: [master] }
+  pull_request: { branches: [master] }
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v1.1.0
+      - uses: actions/cache@v1
+        id: node_modules-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn --frozen-lockfile
+        if: "!steps.node_modules-cache.outputs.cache-hit"
+      - run: |
+          for sha in ${{ join( github.event.commits.*.id, ' ' ) }}; do yarn commitlint -f $sha~ -t $sha; done
+          yarn lint:eslint
+          yarn lint:prettier
+      - run: |
+          yarn test:unit
+          bash <(curl -s https://codecov.io/bash)
+        env: { CODECOV_TOKEN: 9ad954a6-9289-41f5-a538-2d111022d379 }
+      - run: yarn build
+      - uses: actions/upload-artifact@v1
+        with:
+          name: build
+          path: build
+
+  integration-tests-os:
+    needs: [build]
+
+    strategy:
+      matrix:
+        os:
+          - windows-latest
+          - macos-latest
+
+    name: integration-tests-${{ matrix.os }}
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1.1.0
+      - uses: actions/cache@v1
+        id: node_modules-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn --frozen-lockfile
+        if: "!steps.node_modules-cache.outputs.cache-hit"
+      - uses: actions/download-artifact@v1
+        with: { name: build }
+      - run: yarn test:integration
+
+  integration-tests-node:
+    needs: [build]
+
+    strategy:
+      matrix:
+        node:
+          - 10
+          - 12.x
+
+    name: integration-tests-node-${{ matrix.node }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1.1.0
+        with: { version: "${{ matrix.node }}" }
+      - uses: actions/cache@v1
+        id: node_modules-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn --frozen-lockfile
+        if: "!steps.node_modules-cache.outputs.cache-hit"
+      - uses: actions/download-artifact@v1
+        with: { name: build }
+      - run: yarn test:integration
+
+  release:
+    needs:
+      - integration-tests-os
+      - integration-tests-node
+
+    if: github.event_name == 'push'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+      - uses: actions/download-artifact@v1
+        with: { name: build }
+      - uses: actions/cache@v1
+        id: node_modules-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn --frozen-lockfile
+        if: "!steps.node_modules-cache.outputs.cache-hit"
+      - run: |
+          yarn build:readme
+          yarn semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - run: |
+      #     git add README.md
+      #     git config user.name ${{ github.actor }}
+      #     git config user.email ${{ github.actor }}@users.noreply.github.com
+      #     git commit -m "docs(readme): generate README.md [skip ci]" || true
+      #     git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }} || true
