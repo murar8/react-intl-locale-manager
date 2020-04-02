@@ -1,3 +1,5 @@
+name: ci
+
 env: { CI: true }
 
 on:
@@ -16,10 +18,6 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v1.1.0
 
-      - name: Get yarn cache directory
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-        id: yarn-cache-dir
-
       - name: Restore node_modules
         uses: actions/cache@v1
         id: node_modules-cache
@@ -27,6 +25,11 @@ jobs:
           path: node_modules
           key: node_modules-cache-${{ hashFiles('**/yarn.lock') }}
           restore-key: node_modules-cache-
+
+      - name: Get yarn cache directory
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+        if: "!steps.node_modules-cache.outputs.cache-hit"
+        id: yarn-cache-dir
 
       - name: Restore yarn cache
         uses: actions/cache@v1
@@ -84,10 +87,6 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v1.1.0
 
-      - name: Get yarn cache directory
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-        id: yarn-cache-dir
-
       - name: Restore node_modules
         uses: actions/cache@v1
         id: node_modules-cache
@@ -95,6 +94,11 @@ jobs:
           path: node_modules
           key: node_modules-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-key: node_modules-cache-${{ runner.os }}-
+
+      - name: Get yarn cache directory
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+        if: "!steps.node_modules-cache.outputs.cache-hit"
+        id: yarn-cache-dir
 
       - name: Restore yarn cache
         uses: actions/cache@v1
