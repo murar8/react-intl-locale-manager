@@ -1,5 +1,3 @@
-name: CI
-
 env: { CI: true }
 
 on:
@@ -7,47 +5,60 @@ on:
   pull_request: { branches: [master] }
 
 jobs:
-  linux-cache:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1.1.0
-      - run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with: { fetch-depth: 0 }
+
+      - name: Setup node
+        uses: actions/setup-node@v1.1.0
+
+      - name: Get yarn cache directory
+        run: echo "::set-output name=dir::$(yarn cache dir)"
         id: yarn-cache-dir
-      - uses: actions/cache@v1
+
+      - name: Restore yarn cache
+        uses: actions/cache@v1
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: linux-yarn
-      - uses: actions/cache@v1
+          key: yarn-cache
+
+      - name: Restore node_modules
+        uses: actions/cache@v1
         id: node_modules-cache
         with:
           path: node_modules
-          key: linux-node_modules-${{ hashFiles('**/yarn.lock') }}
-          restore-key: linux-node_modules-
-      - run: yarn --frozen-lockfile
+          key: node_modules-cache-${{ hashFiles('**/yarn.lock') }}
+          restore-key: node_modules-cache-
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
         if: "!steps.node_modules-cache.outputs.cache-hit"
 
-  build:
-    runs-on: ubuntu-latest
-    needs: [linux-cache]
+      - name: Run commitlint
+        run: yarn commitlint -f ${{ github.event.before }} -t ${{ github.event.after }}
 
-    steps:
-      - uses: actions/checkout@v2
-        with: { fetch-depth: 0 }
-      - uses: actions/setup-node@v1.1.0
-      - uses: actions/cache@v1
-        with:
-          path: node_modules
-          key: linux-node_modules-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn commitlint -f ${{ github.event.before }} -t ${{ github.event.after }}
-      - run: yarn lint:eslint
-      - run: yarn lint:prettier
-      - run: yarn test:unit
-      - run: bash <(curl -s https://codecov.io/bash)
+      - name: Run eslint
+        run: yarn lint:eslint
+
+      - name: Run prettier
+        run: yarn lint:prettier
+
+      - name: Run unit tests
+        run: yarn test:unit
+
+      - name: Upload coverage data
+        run: bash <(curl -s https://codecov.io/bash)
         env: { CODECOV_TOKEN: 9ad954a6-9289-41f5-a538-2d111022d379 }
-      - run: yarn ci:build
-      - uses: actions/upload-artifact@v1
+
+      - name: Build
+        run: yarn ci:build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v1
         with:
           name: build
           path: build
@@ -66,24 +77,40 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1.1.0
-      - run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v1.1.0
+
+      - name: Get yarn cache directory
+        run: echo "::set-output name=dir::$(yarn cache dir)"
         id: yarn-cache-dir
-      - uses: actions/cache@v1
+
+      - name: Restore yarn cache
+        uses: actions/cache@v1
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-yarn
-      - uses: actions/cache@v1
+          key: yarn-cache-${{ runner.os }}
+
+      - name: Restore node_modules
+        uses: actions/cache@v1
         id: node_modules-cache
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn --frozen-lockfile
+          key: node_modules-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-key: node_modules-cache-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
         if: "!steps.node_modules-cache.outputs.cache-hit"
-      - uses: actions/download-artifact@v1
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v1
         with: { name: build }
-      - run: yarn test:integration
+
+      - name: Run integration tests
+        run: yarn test:integration
 
   integration-tests-node:
     needs: [build]
@@ -99,16 +126,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1.1.0
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v1.1.0
         with: { version: "${{ matrix.node }}" }
-      - uses: actions/cache@v1
+
+      - name: Restore node_modules
+        uses: actions/cache@v1
+        id: node_modules-cache
         with:
           path: node_modules
-          key: linux-node_modules-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/download-artifact@v1
+          key: node_modules-cache-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v1
         with: { name: build }
-      - run: yarn test:integration
+
+      - name: Run integration tests
+        run: yarn test:integration
 
   release:
     needs:
@@ -120,16 +157,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-      - uses: actions/download-artifact@v1
+      - name: Checkout repo
+        uses: actions/checkout@v1
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v1
         with: { name: build }
-      - uses: actions/cache@v1
+
+      - name: Restore node_modules
+        uses: actions/cache@v1
         with:
           path: node_modules
-          key: linux-node_modules-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn ci:build:readme
-      - run: yarn semantic-release
+          key: node_modules-cache-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Build readme
+        run: yarn ci:build:readme
+
+      - name: Release
+        run: yarn semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
