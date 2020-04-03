@@ -42,8 +42,8 @@ jobs:
         run: yarn --frozen-lockfile
         if: "!steps.node_modules-cache.outputs.cache-hit"
 
-      - name: Run commitlint
-        run: yarn commitlint -f ${{ github.event.before }} -t ${{ github.event.after }}
+      # - name: Run commitlint
+      #   run: yarn commitlint -f ${{ github.event.before }} -t ${{ github.event.after }}
 
       - name: Run eslint
         run: yarn lint:eslint
