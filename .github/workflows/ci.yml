@@ -95,18 +95,6 @@ jobs:
           key: node_modules-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-key: node_modules-cache-${{ runner.os }}-
 
-      - name: Get yarn cache directory
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-        if: "!steps.node_modules-cache.outputs.cache-hit"
-        id: yarn-cache-dir
-
-      - name: Restore yarn cache
-        uses: actions/cache@v1
-        if: "!steps.node_modules-cache.outputs.cache-hit"
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: yarn-cache-${{ runner.os }}
-
       - name: Install dependencies
         run: yarn --frozen-lockfile
         if: "!steps.node_modules-cache.outputs.cache-hit"

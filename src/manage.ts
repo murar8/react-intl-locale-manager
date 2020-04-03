@@ -208,7 +208,8 @@ export const manage = createManageCommand(
 
     logDuplicateStats(messages);
 
-    const translations = (outMode === "file" ? readJsonFromFile : readJsonFromDir)(outPath);
+    const readJson = outMode === "file" ? readJsonFromFile : readJsonFromDir;
+    const translations = readJson(outPath);
     const nextTranslations = updateTranslations(translations, messages, languages);
 
     logTranslationStats(translations, nextTranslations);
