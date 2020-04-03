@@ -11,6 +11,8 @@ import {
   getEmptyKeysCount,
   getRemovedIds,
   getRemovedLanguages,
+  Translations,
+  updateTranslations,
 } from "./translations";
 import { readJsonFromDir, readJsonFromFile, writeJsonToDir, writeJsonToFile } from "./util";
 
@@ -136,25 +138,6 @@ export const createManageCommand = (handler: (args: ManageCommandArgs) => void |
   return manage;
 };
 
-type Translations = { [locale: string]: { [id: string]: string } };
-
-export function updateTranslations(
-  current: Translations,
-  messages: Descriptor[],
-  languages: string[]
-): Translations {
-  const updateMessages = (current: { [id: string]: string }, next: { [id: string]: string }) => {
-    return Object.keys(next).reduce((vs, v) => ({ ...vs, [v]: current[v] || next[v] }), {});
-  };
-
-  const next = messages.reduce((vs, v) => ({ ...vs, [v.id]: v.defaultMessage || "" }), {});
-
-  return languages.reduce(
-    (ls, l) => ({ ...ls, [l]: current[l] ? updateMessages(current[l], next) : next }),
-    {}
-  );
-}
-
 function logDuplicateStats(descriptors: Descriptor[]) {
   const duplicates = Object.entries(findDuplicates(descriptors)).map(
     ([id, locations]) =>
@@ -169,32 +152,26 @@ function logDuplicateStats(descriptors: Descriptor[]) {
 
 function logTranslationStats(current: Translations, next: Translations) {
   const addedIds = getAddedIds(current, next);
-  if (!isEmpty(addedIds)) {
-    logger.info(`Added ${addedIds.length} IDs:`, ...addedIds);
-  }
-
   const removedIds = getRemovedIds(current, next);
-  if (!isEmpty(removedIds)) {
-    logger.info(`Removed ${removedIds.length} IDs:`, ...removedIds);
-  }
 
   const addedLanguages = getAddedLanguages(current, next);
-  if (!isEmpty(addedLanguages)) {
-    logger.info(`Added ${addedLanguages.length} languages:`, ...addedLanguages);
-  }
-
   const removedLanguages = getRemovedLanguages(current, next);
-  if (!isEmpty(removedLanguages)) {
-    logger.info(`Removed ${removedLanguages.length} languages:`, ...removedLanguages);
-  }
 
-  const untranslated = Object.entries(getEmptyKeysCount(next)).map(
-    ([locale, count]) => `${count} empty keys for locale ${locale}`
-  );
+  const empty = Object.entries(getEmptyKeysCount(next));
+  const emptyTotal = empty.reduce((tot, [, count]) => tot + count, 0);
+  const emptyEach = empty.map(([locale, count]) => `${count} empty keys for locale ${locale}`);
 
-  if (!isEmpty(untranslated)) {
-    logger.info(`Empty translation keys found:`, ...untranslated);
-  }
+  const messages: [string, string[]][] = [
+    [`Added ${addedIds.length} IDs:`, addedIds],
+    [`Removed ${removedIds.length} IDs:`, removedIds],
+    [`Added ${addedLanguages.length} languages:`, addedLanguages],
+    [`Removed ${removedLanguages.length} languages:`, removedLanguages],
+    [`Found ${emptyTotal} empty translation keys:`, emptyEach],
+  ];
+
+  messages
+    .filter(([, items]) => !isEmpty(items))
+    .forEach(([title, items]) => logger.info(title, ...items));
 }
 
 export const manage = createManageCommand(

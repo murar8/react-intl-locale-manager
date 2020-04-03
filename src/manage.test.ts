@@ -1,4 +1,4 @@
-import { createManageCommand, ManageCommandArgs, updateTranslations } from "./manage";
+import { createManageCommand, ManageCommandArgs } from "./manage";
 
 describe("createManageCommand", () => {
   it("Should pass all the command line arguments to the callback function.", () => {
@@ -43,69 +43,5 @@ describe("createManageCommand", () => {
   it("Should throw error if neither -o or -f are specified.", () => {
     const argv = `node intl-extract -l en,jp src/**/*.js`.split(" ");
     expect(() => createManageCommand(() => undefined).parse(argv)).toThrowError();
-  });
-});
-
-describe("updateTranslations", () => {
-  const messages = [
-    {
-      id: "a",
-      defaultMessage: "updated a",
-      file: "path/file_a",
-      start: { line: 10, column: 20 },
-      end: { line: 10, column: 30 },
-    },
-    {
-      id: "b",
-      defaultMessage: "updated b",
-      file: "path/file_a",
-      start: { line: 10, column: 20 },
-      end: { line: 10, column: 30 },
-    },
-  ];
-
-  it("Should add new messages to tranlations.", () => {
-    const actual = updateTranslations({ en: { b: "message b" } }, messages, ["en"]);
-    const expected = { en: { a: "updated a", b: "message b" } };
-
-    expect(actual).toEqual(expected);
-  });
-
-  it("Should remove superfluous messages.", () => {
-    const actual = updateTranslations({ en: { b: "message b" } }, messages.slice(0, 1), ["en"]);
-    const expected = { en: { a: "updated a" } };
-
-    expect(actual).toEqual(expected);
-  });
-
-  it("Should NOT overwrite the translations' messages.", () => {
-    const actual = updateTranslations({ en: { a: "message a" } }, messages, ["en"]);
-    const expected = { en: { a: "message a", b: "updated b" } };
-
-    expect(actual).toEqual(expected);
-  });
-
-  it("Should add a translation entry for every new locale.", () => {
-    const actual = updateTranslations({ en: { a: "message a" } }, messages.slice(0, 1), [
-      "en",
-      "es",
-      "de",
-    ]);
-
-    const expected = { en: { a: "message a" }, es: { a: "updated a" }, de: { a: "updated a" } };
-
-    expect(actual).toEqual(expected);
-  });
-
-  it("Should remove superfluous translations.", () => {
-    const actual = updateTranslations(
-      { en: { a: "message a" }, de: { a: "message a" } },
-      messages.slice(0, 1),
-      ["en"]
-    );
-
-    const expected = { en: { a: "message a" } };
-
-    expect(actual).toEqual(expected);
   });
 });
