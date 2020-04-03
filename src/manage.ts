@@ -1,10 +1,18 @@
 import { createCommand } from "commander";
 import glob from "globby";
-import { difference, groupBy, isEmpty, pick, union, flatten } from "lodash";
+import { isEmpty, pick } from "lodash";
+import { basename } from "path";
 import { Descriptor, extractMessages } from "./extract";
 import logger from "./logger";
+import {
+  findDuplicates,
+  getAddedIds,
+  getAddedLanguages,
+  getEmptyKeysCount,
+  getRemovedIds,
+  getRemovedLanguages,
+} from "./translations";
 import { readJsonFromDir, readJsonFromFile, writeJsonToDir, writeJsonToFile } from "./util";
-import { basename } from "path";
 
 const splitComma = (v: string, vs: string[] = []) => [...vs, ...v.split(",").filter(Boolean)];
 
@@ -148,10 +156,10 @@ export function updateTranslations(
 }
 
 function logDuplicateStats(descriptors: Descriptor[]) {
-  const duplicatesById = Object.values(groupBy(descriptors, d => d.id)).filter(ds => ds.length > 1);
-
-  const duplicates = flatten(duplicatesById).map(
-    ({ id, file, start: { line, column } }) => `ID ${id} at ${file}:${line}:${column}`
+  const duplicates = Object.entries(findDuplicates(descriptors)).map(
+    ([id, locations]) =>
+      `ID: ${id}\n` +
+      locations.map(({ file, line, column }) => `  at ${file}:${line}:${column}`).join("\n")
   );
 
   if (!isEmpty(duplicates)) {
@@ -159,42 +167,30 @@ function logDuplicateStats(descriptors: Descriptor[]) {
   }
 }
 
-function logTranslationStats(currentTranslations: Translations, nextTranslations: Translations) {
-  const getTranslationIds = (t: Translations) => {
-    const ids = Object.values(t).map(v => Object.keys(v));
-    return union(...ids);
-  };
-
-  const currentIds = getTranslationIds(currentTranslations);
-  const nextIds = getTranslationIds(nextTranslations);
-
-  const addedIds = difference(nextIds, currentIds);
+function logTranslationStats(current: Translations, next: Translations) {
+  const addedIds = getAddedIds(current, next);
   if (!isEmpty(addedIds)) {
     logger.info(`Added ${addedIds.length} IDs:`, ...addedIds);
   }
 
-  const removedIds = difference(currentIds, nextIds);
+  const removedIds = getRemovedIds(current, next);
   if (!isEmpty(removedIds)) {
     logger.info(`Removed ${removedIds.length} IDs:`, ...removedIds);
   }
 
-  const currentLanguages = Object.keys(currentTranslations);
-  const nextLanguages = Object.keys(nextTranslations);
-
-  const addedLanguages = difference(nextLanguages, currentLanguages);
+  const addedLanguages = getAddedLanguages(current, next);
   if (!isEmpty(addedLanguages)) {
     logger.info(`Added ${addedLanguages.length} languages:`, ...addedLanguages);
   }
 
-  const removedLanguages = difference(currentLanguages, nextLanguages);
+  const removedLanguages = getRemovedLanguages(current, next);
   if (!isEmpty(removedLanguages)) {
     logger.info(`Removed ${removedLanguages.length} languages:`, ...removedLanguages);
   }
 
-  const untranslated = Object.entries(nextTranslations)
-    .map(([locale, trans]) => [locale, Object.values(trans).filter(v => !v).length] as const)
-    .filter(([, count]) => count > 0)
-    .map(([locale, count]) => `${count} empty keys for locale "${locale}".`);
+  const untranslated = Object.entries(getEmptyKeysCount(next)).map(
+    ([locale, count]) => `${count} empty keys for locale ${locale}`
+  );
 
   if (!isEmpty(untranslated)) {
     logger.info(`Empty translation keys found:`, ...untranslated);
@@ -206,15 +202,14 @@ export const manage = createManageCommand(
     const expandedFiles = glob.sync(files, { ignore });
     const messages = extractMessages(expandedFiles, extractOpts);
 
-    logDuplicateStats(messages);
-
     const readJson = outMode === "file" ? readJsonFromFile : readJsonFromDir;
     const translations = readJson(outPath);
     const nextTranslations = updateTranslations(translations, messages, languages);
 
-    logTranslationStats(translations, nextTranslations);
-
     const writeJson = outMode === "file" ? writeJsonToFile : writeJsonToDir;
     writeJson(outPath, nextTranslations);
+
+    logDuplicateStats(messages);
+    logTranslationStats(translations, nextTranslations);
   }
 );

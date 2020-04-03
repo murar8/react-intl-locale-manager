@@ -20,11 +20,11 @@ export function readJsonFromDir(dir: string): any {
 }
 
 export function writeJsonToFile(file: string, data: any) {
-  writeJSON(path.normalize(file), data, { spaces: 2 });
+  writeJSON(file, data, { spaces: 2 });
 }
 
 export function writeJsonToDir(dir: string, data: { [name: string]: any }) {
-  mkdirpSync(path.normalize(dir));
+  mkdirpSync(dir);
 
   for (const [name, payload] of Object.entries(data)) {
     writeJsonToFile(path.join(dir, `${name}.json`), payload);

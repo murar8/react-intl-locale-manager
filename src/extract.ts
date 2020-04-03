@@ -4,7 +4,7 @@ import { ExtractedMessageDescriptor } from "babel-plugin-react-intl";
 import { OptionsSchema } from "babel-plugin-react-intl/dist/options";
 import { flatMap } from "lodash";
 
-export type Descriptor = SourceLocation & ExtractedMessageDescriptor;
+export type Descriptor = SourceLocation & { file: string } & ExtractedMessageDescriptor;
 
 export type IntlOptions = Pick<
   OptionsSchema,
