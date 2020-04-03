@@ -1,0 +1,2 @@
+# react-intl-locale-manager
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/93059009875b41c9925fc6f59a401fe6)](https://app.codacy.com/manual/lnzmrr/react-intl-locale-manager?utm_source=github.com&utm_medium=referral&utm_content=murar8/react-intl-locale-manager&utm_campaign=Badge_Grade_Dashboard)
