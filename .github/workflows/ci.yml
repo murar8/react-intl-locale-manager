@@ -56,7 +56,7 @@ jobs:
 
       - name: Upload coverage data
         run: bash <(curl -s https://codecov.io/bash)
-        env: { CODECOV_TOKEN: 9ad954a6-9289-41f5-a538-2d111022d379 }
+        env: { CODECOV_TOKEN: 6dd478ba-5e51-498f-9eaf-65e6752f837a }
 
       - name: Build
         run: yarn ci:build

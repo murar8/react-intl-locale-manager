@@ -41,7 +41,7 @@ export const createManageCommand = (handler: (args: ManageCommandArgs) => void |
         `\nExamples:`,
         `  ${program} ${command} -l en,es -o ./locales -i src/**/*.test.tsx src/**/*.tsx`,
         `  ${program} ${command} -l de,it -f locales.json src/**/*.{js,ts,jsx,tsx}`,
-        "\nFor additional information, visit: https://github.com/murar8/react-intl-manager",
+        "\nFor additional information, visit: https://github.com/murar8/react-intl-locale-manager",
       ].join("\n")
     );
   });

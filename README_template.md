@@ -1,5 +1,6 @@
 [![build](https://github.com/murar8/react-intl-locale-manager/workflows/ci/badge.svg)](https://github.com/murar8/react-intl-locale-manager/actions?query=workflow%3Aci)
-[![codecov](https://codecov.io/gh/murar8/react-intl-manager/branch/master/graph/badge.svg)](https://codecov.io/gh/murar8/react-intl-manager)
+[![codecov](https://codecov.io/gh/murar8/react-intl-locale-manager/branch/master/graph/badge.svg)](https://codecov.io/gh/murar8/react-intl-locale-manager)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/93059009875b41c9925fc6f59a401fe6)](https://app.codacy.com/manual/lnzmrr/react-intl-locale-manager?utm_source=github.com&utm_medium=referral&utm_content=murar8/react-intl-locale-manager&utm_campaign=Badge_Grade_Dashboard)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=murar8/react-intl-locale-manager)](https://dependabot.com)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
@@ -20,19 +21,19 @@ _react-intl-locale-manager_ is a CLI utility created to aid in the extraction an
 ## Installation
 
 ```bash
-yarn add react-intl-manager
+yarn add react-intl-locale-manager
 ```
 
 or
 
 ```bash
-npm install --save react-intl-manager
+npm install --save react-intl-locale-manager
 ```
 
 ## Usage
 
 ```bash
-intl-manager --help
+locale-manager --help
 ```
 
 ```
@@ -40,7 +41,7 @@ intl-manager --help
 ```
 
 ```bash
-intl-manager manage --help
+locale-manager manage --help
 ```
 
 ```
