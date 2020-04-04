@@ -3,7 +3,7 @@ import { createCommand } from "commander";
 import glob from "globby";
 import { isEmpty, pick } from "lodash";
 import { basename } from "path";
-import { Descriptor, extractMessages } from "./extract";
+import { extractMessages } from "./extract";
 import {
   EmptyKeyStats,
   findDuplicates,
