@@ -8,7 +8,7 @@ jest.mock("@babel/core", () => ({
   transformFileSync: jest.fn(() => ({
     metadata: {
       "react-intl": {
-        messages: [{ id: "id_1" }, { id: "id_2" }],
+        messages: [],
       },
     },
   })),
@@ -20,14 +20,6 @@ it("Should pass the input paths to `globby.sync`.", () => {
 });
 
 it("Should pass the extraction options to react-intl.", () => {
-  (transformFileSync as jest.Mock).mockReturnValueOnce({
-    metadata: {
-      "react-intl": {
-        messages: [],
-      },
-    },
-  });
-
   const options = {
     additionalComponentNames: ["Component"],
     extractFromFormatMessageCall: true,
@@ -39,7 +31,7 @@ it("Should pass the extraction options to react-intl.", () => {
   expect(transformFileSync).toHaveBeenCalledWith(
     "files/a",
     expect.objectContaining({
-      plugins: expect.arrayContaining([["react-intl", expect.objectContaining(options)]]),
+      plugins: expect.arrayContaining([[expect.any(Function), expect.objectContaining(options)]]),
     })
   );
 });

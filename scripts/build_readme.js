@@ -7,12 +7,9 @@ const { join } = require("path");
 const BIN = join(__dirname, "../bin/locale-manager");
 const TEMPLATE = join(__dirname, "../README_template.md");
 
-const commonHelp = spawnSync(BIN, ["--help"]);
-const manageHelp = spawnSync(BIN, ["manage", "--help"]);
-
+const help = spawnSync(BIN, ["--help"]);
 let readme = readFileSync(TEMPLATE, "utf-8");
 
-readme = readme.replace("@TEMPLATE_COMMON_HELP", commonHelp.stdout.toString());
-readme = readme.replace("@TEMPLATE_MANAGE_HELP", manageHelp.stdout.toString());
+readme = readme.replace("@TEMPLATE_HELP", help.stdout.toString());
 
 writeFileSync(join(__dirname, "../README.md"), readme);

@@ -3,7 +3,7 @@ import { SourceLocation } from "@babel/types";
 import { ExtractedMessageDescriptor } from "babel-plugin-react-intl";
 import { OptionsSchema } from "babel-plugin-react-intl/dist/options";
 import glob from "globby";
-import reactIntl from "babel-plugin-react-intl";
+import babelPluginReactIntl from "babel-plugin-react-intl";
 import { flatMap } from "lodash";
 
 export type Descriptor = SourceLocation & { file: string } & ExtractedMessageDescriptor;
@@ -50,7 +50,7 @@ const createBabelOptions = (options?: IntlOptions): TransformOptions => ({
       "typescript",
     ],
   },
-  plugins: [[reactIntl, { ...options, extractSourceLocation: true }]],
+  plugins: [[babelPluginReactIntl, { ...options, extractSourceLocation: true }]],
 });
 
 export function extractMessages(files: string[], ignore: string[], intlOptions: IntlOptions) {

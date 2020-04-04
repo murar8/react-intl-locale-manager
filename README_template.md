@@ -32,20 +32,14 @@ npm install --save react-intl-locale-manager
 
 ## Usage
 
+The best way to obtain information about the usage is to use the tool's internal help:
+
 ```bash
 locale-manager --help
 ```
 
 ```
-@TEMPLATE_COMMON_HELP
-```
-
-```bash
-locale-manager manage --help
-```
-
-```
-@TEMPLATE_MANAGE_HELP
+@TEMPLATE_HELP
 ```
 
 ## Contributing
