@@ -30,3 +30,10 @@ export function writeJsonToDir(dir: string, data: { [name: string]: any }) {
     writeJsonToFile(path.join(dir, `${name}.json`), payload);
   }
 }
+
+export const indented = (s: string, level = 2) => s.replace(/^/gm, " ".repeat(level));
+
+export const splitComma = (v: string, vs: string[] = []) => [
+  ...vs,
+  ...v.split(",").filter(Boolean),
+];

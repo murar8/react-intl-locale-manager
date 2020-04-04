@@ -1,4 +1,4 @@
-import { readJsonFromDir, writeJsonToDir } from "./util";
+import { readJsonFromDir, writeJsonToDir, splitComma, indented } from "./util";
 import {
   readdirSync,
   pathExistsSync,
@@ -22,6 +22,7 @@ describe("readJsonFromDir", () => {
     (pathExistsSync as jest.Mock).mockReturnValueOnce(false);
     expect(readJsonFromDir("path/a")).toEqual({});
   });
+
   it("Should return all the files in a directory merged in a json object.", () => {
     (pathExistsSync as jest.Mock).mockReturnValueOnce(true);
 
@@ -48,6 +49,25 @@ describe("readJsonFromDir", () => {
     expect(mkdirpSync).toHaveBeenCalledWith("path/a");
 
     expect(writeJSON).toHaveBeenCalledTimes(3);
+    expect(writeJSON).toHaveBeenNthCalledWith(1, "path/a/a.json", { v: 1 }, { spaces: 2 });
     expect(writeJSON).toHaveBeenNthCalledWith(2, "path/a/b.json", { v: 2 }, { spaces: 2 });
+    expect(writeJSON).toHaveBeenNthCalledWith(3, "path/a/c.json", { v: 3 }, { spaces: 2 });
+  });
+});
+
+describe("splitComma", () => {
+  it("Should split the input string at every comma removing falsy values.", () => {
+    expect(splitComma("")).toEqual([]);
+    expect(splitComma("abc")).toEqual(["abc"]);
+    expect(splitComma("a,b,c")).toEqual(["a", "b", "c"]);
+    expect(splitComma(",a,,b,c,")).toEqual(["a", "b", "c"]);
+  });
+});
+
+describe("indented", () => {
+  it("Should return the input string with leading whitespace on every line.", () => {
+    expect(indented("")).toEqual("  ");
+    expect(indented("abc\ndef\nghi")).toEqual("  abc\n  def\n  ghi");
+    expect(indented("abc", 4)).toEqual("    abc");
   });
 });

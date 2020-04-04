@@ -87,11 +87,10 @@ Object {
 `;
 
 exports[`Should print information about the changes to console. 1`] = `
-" Duplicate ids found: 
+"stats :  Found 1 Duplicate ids: 
   ID: message3
     at a.js:7:12
     at b.js:5:12
-
  Added 5 IDs: 
   message1
   message2
@@ -103,12 +102,65 @@ exports[`Should print information about the changes to console. 1`] = `
   message6
   message7
 
- Added 1 languages: 
+ Added 1 locales: 
   es
 
- Removed 2 languages: 
+ Removed 2 locales: 
   de
   fr
 
+"
+`;
+
+exports[`Should show the help message. 1`] = `
+"Usage: locale-manager manage [options] [files...]
+
+Manage the translation process of projects that use the 'react-intl' translation library.
+This command extracts react-intl messages into key-value pairs of id and message
+that can be imported directly in code and passed to the 'IntlProvider' component.
+Additonally, existing translations will be merged with the extracted messages
+and information about the changes will be printed to console.
+
+Options:
+  -l --languages <codes>                Comma-separated list of language codes
+                                        to mantain. A translation entry be
+                                        generated and mantained for every code
+                                        in this list.
+  -o --out-dir <path>                   Output the extracted messages in JSON
+                                        format in the specified directory,
+                                        generating a [locale].json file for
+                                        each locale.
+                                        Mutually exclusive with '--out-file'.
+  -f --out-file <path>                  Output the extracted messages in a
+                                        single JSON file containing an entry
+                                        for each locale.
+                                        Mutually exclusive with '--out-dir'.
+  -i --ignore <glob>                    Glob pattern designationg the files to
+                                        exlcude from the translation process.
+                                        It is possible to specify the flag
+                                        multiple times to use more than one
+                                        pattern.
+  --module-source-name <name>           The ES6 module source name of the React
+                                        Intl package. (default: \\"react-intl\\")
+  --additional-component-names <names>  Comma separated list of component names
+                                        to extract messages from. Note that
+                                        default we check for the fact that
+                                        'FormattedMessage' is imported from
+                                        '--module-source-name' to make sure
+                                        variable alias works. This option does
+                                        not do that so it's less safe.
+  --extract-from-format-message-call    Opt-in to extract from
+                                        'intl.formatMessage' calls with the
+                                        restriction that it has to be called
+                                        with an object literal such as
+                                        'intl.formatMessage({ id: 'foo', ...})'
+                                        (default: false)
+  -h, --help                            display help for command
+
+Examples:
+  locale-manager manage -l en,es -o ./locales -i src/**/*.test.tsx src/**/*.tsx
+  locale-manager manage -l de,it -f locales.json src/**/*.{js,ts,jsx,tsx}
+
+For additional information, visit: https://github.com/murar8/react-intl-locale-manager
 "
 `;

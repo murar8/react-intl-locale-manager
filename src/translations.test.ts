@@ -1,11 +1,8 @@
 import {
   updateTranslations,
   findDuplicates,
-  getAddedIds,
-  getRemovedIds,
-  getAddedLanguages,
-  getRemovedLanguages,
-  getEmptyKeysCount,
+  getEmptyKeyStats,
+  getTranslationStats,
 } from "./translations";
 
 describe("updateTranslations", () => {
@@ -111,62 +108,35 @@ describe("findDuplicates", () => {
   });
 });
 
-describe("getAddedIds", () => {
-  it("Should return the added ids.", () => {
-    const current: any = {
-      en: { a: "message a", b: "message b", c: "message c" },
-      it: { a: "message a", b: "message b" },
-    };
-
-    const next: any = {
-      en: { a: "message a", b: "message b", c: "message c", d: "message d" },
-      it: { a: "message a", b: "message b", c: "message c", d: "message d" },
-    };
-
-    expect(getAddedIds({}, {})).toEqual([]);
-    expect(getAddedIds(next, next)).toEqual([]);
-    expect(getAddedIds(current, next)).toEqual(["c", "d"]);
-  });
-});
-
-describe("getRemovedIds", () => {
-  it("Should return the removed ids.", () => {
-    const current: any = {
-      en: { a: "message a", b: "message b", c: "message c", d: "message d" },
-      it: { a: "message a", b: "message b" },
-    };
-
-    const next: any = {
-      en: { a: "message a", b: "message b" },
-      it: { a: "message a", b: "message b" },
-    };
-
-    expect(getRemovedIds({}, {})).toEqual([]);
-    expect(getRemovedIds(next, next)).toEqual([]);
-    expect(getRemovedIds(current, next)).toEqual(["c", "d"]);
-  });
-});
-
-describe("getAddedLanguages", () => {
-  it("Should return the added language codes.", () => {
-    expect(getAddedLanguages({}, {})).toEqual([]);
-    expect(getAddedLanguages({ en: {} }, { en: {}, it: {}, de: {} })).toEqual(["it", "de"]);
-  });
-});
-
-describe("getRemovedLanguages", () => {
-  it("Should return the added language codes.", () => {
-    expect(getRemovedLanguages({}, {})).toEqual([]);
-    expect(getRemovedLanguages({ en: {}, it: {}, de: {} }, { en: {} })).toEqual(["it", "de"]);
-  });
-});
-
 describe("getEmptyKeysCount", () => {
   it("Should return the added language codes.", () => {
-    expect(getEmptyKeysCount({})).toEqual({});
-    expect(getEmptyKeysCount({ en: { a: "1" } })).toEqual({});
+    expect(getEmptyKeyStats({})).toEqual({ emptyCountByLocale: {}, emptyCountTotal: 0 });
+    expect(getEmptyKeyStats({ en: { a: "1" } })).toEqual({
+      emptyCountByLocale: {},
+      emptyCountTotal: 0,
+    });
     expect(
-      getEmptyKeysCount({ en: { a: "1", b: "" }, it: { a: "" }, de: { a: "2", b: "3" } })
-    ).toEqual({ en: 1, it: 1 });
+      getEmptyKeyStats({ en: { a: "1", b: "" }, it: { a: "" }, de: { a: "2", b: "3" } })
+    ).toEqual({ emptyCountByLocale: { en: 1, it: 1 }, emptyCountTotal: 2 });
+  });
+});
+
+describe("getTranslationStats", () => {
+  it("Should return statistics about the translations.", () => {
+    expect(
+      getTranslationStats(
+        { en: { a: "1", b: "2" }, es: { a: "1", b: "2" }, hk: { f: "0", a: "1", b: "2" } },
+        {
+          en: { b: "2", c: "3", d: "4" },
+          de: { b: "2", c: "3", d: "4" },
+          nl: { b: "2", c: "3", d: "4" },
+        }
+      )
+    ).toEqual({
+      addedIds: ["c", "d"],
+      removedIds: ["a", "f"],
+      addedLocales: ["de", "nl"],
+      removedLocales: ["es", "hk"],
+    });
   });
 });

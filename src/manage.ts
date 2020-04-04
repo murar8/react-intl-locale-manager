@@ -1,22 +1,26 @@
+import chalk from "chalk";
 import { createCommand } from "commander";
 import glob from "globby";
 import { isEmpty, pick } from "lodash";
 import { basename } from "path";
 import { Descriptor, extractMessages } from "./extract";
-import logger from "./logger";
 import {
+  EmptyKeyStats,
   findDuplicates,
-  getAddedIds,
-  getAddedLanguages,
-  getEmptyKeysCount,
-  getRemovedIds,
-  getRemovedLanguages,
-  Translations,
+  getEmptyKeyStats,
+  getTranslationStats,
+  Location,
+  TranslationStats,
   updateTranslations,
 } from "./translations";
-import { readJsonFromDir, readJsonFromFile, writeJsonToDir, writeJsonToFile } from "./util";
-
-const splitComma = (v: string, vs: string[] = []) => [...vs, ...v.split(",").filter(Boolean)];
+import {
+  indented,
+  readJsonFromDir,
+  readJsonFromFile,
+  splitComma,
+  writeJsonToDir,
+  writeJsonToFile,
+} from "./util";
 
 export type ManageCommandArgs = {
   files: string[];
@@ -138,40 +142,56 @@ export const createManageCommand = (handler: (args: ManageCommandArgs) => void |
   return manage;
 };
 
-function logDuplicateStats(descriptors: Descriptor[]) {
-  const duplicates = Object.entries(findDuplicates(descriptors)).map(
-    ([id, locations]) =>
-      `ID: ${id}\n` +
-      locations.map(({ file, line, column }) => `  at ${file}:${line}:${column}`).join("\n")
-  );
+export function prettyStats({
+  addedIds,
+  addedLocales,
+  emptyCountByLocale,
+  emptyCountTotal,
+  removedIds,
+  removedLocales,
+  duplicates,
+}: TranslationStats & EmptyKeyStats & { duplicates: Record<string, Location[]> }) {
+  const result: string[] = [];
+
+  const duplicateEntries = Object.entries(duplicates);
 
   if (!isEmpty(duplicates)) {
-    logger.warn("Duplicate ids found:", ...duplicates);
+    result.push(chalk.black.bgYellow(` Found ${duplicateEntries.length} Duplicate ids: `));
+
+    duplicateEntries.forEach(([id, locations]) => {
+      result.push(chalk.yellow(indented(`ID: ${id}`)));
+
+      locations.forEach(({ file, line, column }) => {
+        result.push(indented(`at ${file}:${line}:${column}`, 4));
+      });
+    });
   }
-}
 
-function logTranslationStats(current: Translations, next: Translations) {
-  const addedIds = getAddedIds(current, next);
-  const removedIds = getRemovedIds(current, next);
-
-  const addedLanguages = getAddedLanguages(current, next);
-  const removedLanguages = getRemovedLanguages(current, next);
-
-  const empty = Object.entries(getEmptyKeysCount(next));
-  const emptyTotal = empty.reduce((tot, [, count]) => tot + count, 0);
-  const emptyEach = empty.map(([locale, count]) => `${count} empty keys for locale ${locale}`);
+  const emptyDescriptions = Object.entries(emptyCountByLocale).map(
+    ([locale, count]) => `${count} empty keys for locale ${locale}`
+  );
 
   const messages: [string, string[]][] = [
     [`Added ${addedIds.length} IDs:`, addedIds],
     [`Removed ${removedIds.length} IDs:`, removedIds],
-    [`Added ${addedLanguages.length} languages:`, addedLanguages],
-    [`Removed ${removedLanguages.length} languages:`, removedLanguages],
-    [`Found ${emptyTotal} empty translation keys:`, emptyEach],
+    [`Added ${addedLocales.length} locales:`, addedLocales],
+    [`Removed ${removedLocales.length} locales:`, removedLocales],
+    [`Found ${emptyCountTotal} empty translation keys:`, emptyDescriptions],
   ];
 
-  messages
-    .filter(([, items]) => !isEmpty(items))
-    .forEach(([title, items]) => logger.info(title, ...items));
+  const messagesWithData = messages.filter(([, items]) => !isEmpty(items));
+
+  if (!isEmpty(messagesWithData)) {
+    messagesWithData.forEach(([title, items]) => {
+      result.push(chalk.black.bgGreen(` ${title} `));
+      result.push(indented(items.join("\n")));
+      result.push("");
+    });
+  } else {
+    result.push(chalk.green(` Translations are already up to date. `));
+  }
+
+  return result.join("\n");
 }
 
 export const manage = createManageCommand(
@@ -186,7 +206,11 @@ export const manage = createManageCommand(
     const writeJson = outMode === "file" ? writeJsonToFile : writeJsonToDir;
     writeJson(outPath, nextTranslations);
 
-    logDuplicateStats(messages);
-    logTranslationStats(translations, nextTranslations);
+    const duplicates = findDuplicates(messages);
+    const translationStats = getTranslationStats(translations, nextTranslations);
+    const emptyKeyStats = getEmptyKeyStats(nextTranslations);
+
+    const stats = prettyStats({ ...translationStats, ...emptyKeyStats, duplicates });
+    console.log("stats :", stats);
   }
 );

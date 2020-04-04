@@ -22,13 +22,13 @@ export function updateTranslations(
 
 export type Location = { file: string; line: number; column: number };
 
-const getLocation = ({ file, start: { line, column } }: Descriptor) => ({
-  file,
-  line,
-  column,
-});
-
 export function findDuplicates(descriptors: Descriptor[]): Record<string, Location[]> {
+  const getLocation = ({ file, start: { line, column } }: Descriptor) => ({
+    file,
+    line,
+    column,
+  });
+
   return Object.values(groupBy(descriptors, d => d.id))
     .filter(ds => ds.length > 1)
     .reduce(
@@ -37,29 +37,40 @@ export function findDuplicates(descriptors: Descriptor[]): Record<string, Locati
     );
 }
 
-const getCommonIds = (t: Translations) => intersection(...Object.values(t).map(Object.keys));
+export type TranslationStats = {
+  addedIds: string[];
+  removedIds: string[];
+  addedLocales: string[];
+  removedLocales: string[];
+};
 
-export function getAddedIds(current: Translations, next: Translations) {
-  return difference(getCommonIds(next), getCommonIds(current));
+export function getTranslationStats(current: Translations, next: Translations): TranslationStats {
+  const getCommonIds = (t: Translations) => intersection(...Object.values(t).map(Object.keys));
+  const getAllIds = (t: Translations) => union(...Object.values(t).map(Object.keys));
+
+  const currentLocales = Object.keys(current);
+  const nextLocales = Object.keys(next);
+
+  return {
+    addedIds: difference(getCommonIds(next), getCommonIds(current)),
+    removedIds: difference(getAllIds(current), getAllIds(next)),
+    addedLocales: difference(nextLocales, currentLocales),
+    removedLocales: difference(currentLocales, nextLocales),
+  };
 }
 
-const getAllIds = (t: Translations) => union(...Object.values(t).map(Object.keys));
+export type EmptyKeyStats = {
+  emptyCountTotal: number;
+  emptyCountByLocale: Record<string, number>;
+};
 
-export function getRemovedIds(current: Translations, next: Translations) {
-  return difference(getAllIds(current), getAllIds(next));
-}
-
-export function getAddedLanguages(current: Translations, next: Translations) {
-  return difference(Object.keys(next), Object.keys(current));
-}
-
-export function getRemovedLanguages(current: Translations, next: Translations) {
-  return difference(Object.keys(current), Object.keys(next));
-}
-
-export function getEmptyKeysCount(translations: Translations): Record<string, number> {
-  return Object.entries(translations)
+export function getEmptyKeyStats(translations: Translations): EmptyKeyStats {
+  const empty = Object.entries(translations)
     .map(([locale, trans]) => [locale, Object.values(trans).filter(v => !v).length] as const)
-    .filter(([, count]) => count > 0)
-    .reduce((vs, [locale, count]) => ({ ...vs, [locale]: count }), {});
+    .filter(([, count]) => count > 0);
+
+  return {
+    emptyCountTotal: empty.reduce((vs, [, count]) => vs + count, 0),
+    emptyCountByLocale: empty.reduce((vs, [locale, count]) => ({ ...vs, [locale]: count }), {}),
+  };
 }

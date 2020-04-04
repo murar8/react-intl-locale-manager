@@ -67,9 +67,8 @@ it("Should print information about the changes to console.", () => {
   expect(stdout.toString()).toMatchSnapshot();
 });
 
-it("Should print no information if there were no changes.", () => {
+it("Should show the help message.", () => {
   loadFixture("no_changes");
-  const stdout = run("-f", "locales.json");
-
-  expect(stdout.toString()).toBeFalsy();
+  const stdout = run("--help");
+  expect(stdout.toString()).toMatchSnapshot();
 });

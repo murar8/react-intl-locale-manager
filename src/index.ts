@@ -1,6 +1,7 @@
+import chalk from "chalk";
 import { createCommand } from "commander";
-import log from "./logger";
 import { manage } from "./manage";
+import { indented } from "./util";
 
 const version = require("../package.json").version;
 
@@ -22,7 +23,8 @@ export default () => {
   try {
     program.parse();
   } catch (error) {
-    log.error("An error occured:", error.message);
+    console.log(chalk.black.bgRed(` An error occured: `));
+    console.log(indented(error.message));
     process.exit(1);
   }
 };
