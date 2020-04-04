@@ -8,6 +8,15 @@ import {
 } from "fs-extra";
 import path from "path";
 
+export const inlined = ([input]: TemplateStringsArray) => input.replace(/\s+/gm, " ");
+
+export const indented = (s: string, level = 2) => s.replace(/^/gm, " ".repeat(level));
+
+export const splitComma = (v: string, vs: string[] = []) => [
+  ...vs,
+  ...v.split(",").filter(Boolean),
+];
+
 export const readJsonFromFile = (path: string) => (existsSync(path) ? readJsonSync(path) : {});
 
 export function readJsonFromDir(dir: string): any {
@@ -30,10 +39,3 @@ export function writeJsonToDir(dir: string, data: { [name: string]: any }) {
     writeJsonToFile(path.join(dir, `${name}.json`), payload);
   }
 }
-
-export const indented = (s: string, level = 2) => s.replace(/^/gm, " ".repeat(level));
-
-export const splitComma = (v: string, vs: string[] = []) => [
-  ...vs,
-  ...v.split(",").filter(Boolean),
-];

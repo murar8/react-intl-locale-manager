@@ -1,7 +1,8 @@
-import { BabelFileMetadata, ParserOptions, transformFileSync } from "@babel/core";
+import { transformFileSync, TransformOptions } from "@babel/core";
 import { SourceLocation } from "@babel/types";
 import { ExtractedMessageDescriptor } from "babel-plugin-react-intl";
 import { OptionsSchema } from "babel-plugin-react-intl/dist/options";
+import glob from "globby";
 import { flatMap } from "lodash";
 
 export type Descriptor = SourceLocation & { file: string } & ExtractedMessageDescriptor;
@@ -11,56 +12,51 @@ export type IntlOptions = Pick<
   "additionalComponentNames" | "extractFromFormatMessageCall" | "moduleSourceName"
 >;
 
-const baseParserOptions: ParserOptions = {
-  sourceType: "unambiguous",
-  allowAwaitOutsideFunction: true,
-  allowImportExportEverywhere: true,
-  allowReturnOutsideFunction: true,
-  allowSuperOutsideMethod: true,
-  allowUndeclaredExports: true,
-  plugins: [
-    "asyncGenerators",
-    "bigInt",
-    "classPrivateMethods",
-    "classPrivateProperties",
-    "classProperties",
-    "decorators-legacy",
-    "doExpressions",
-    "dynamicImport",
-    "exportDefaultFrom",
-    "exportNamespaceFrom",
-    "functionBind",
-    "functionSent",
-    "importMeta",
-    "jsx",
-    "logicalAssignment",
-    "nullishCoalescingOperator",
-    "numericSeparator",
-    "objectRestSpread",
-    "optionalCatchBinding",
-    "optionalChaining",
-    "partialApplication",
-    "throwExpressions",
-    "topLevelAwait",
-    "typescript",
-  ],
-};
-
-type ReactIntlMetadata = BabelFileMetadata & {
-  "react-intl": {
-    messages: Descriptor[];
-  };
-};
-
-const createBabelOptions = (options?: IntlOptions) => ({
+const createBabelOptions = (options?: IntlOptions): TransformOptions => ({
   babelrc: false,
   code: false,
-  parserOpts: baseParserOptions,
+  parserOpts: {
+    sourceType: "unambiguous",
+    allowAwaitOutsideFunction: true,
+    allowImportExportEverywhere: true,
+    allowReturnOutsideFunction: true,
+    allowSuperOutsideMethod: true,
+    allowUndeclaredExports: true,
+    plugins: [
+      "asyncGenerators",
+      "bigInt",
+      "classPrivateMethods",
+      "classPrivateProperties",
+      "classProperties",
+      "decorators-legacy",
+      "doExpressions",
+      "dynamicImport",
+      "exportDefaultFrom",
+      "exportNamespaceFrom",
+      "functionBind",
+      "functionSent",
+      "importMeta",
+      "jsx",
+      "logicalAssignment",
+      "nullishCoalescingOperator",
+      "numericSeparator",
+      "objectRestSpread",
+      "optionalCatchBinding",
+      "optionalChaining",
+      "partialApplication",
+      "throwExpressions",
+      "topLevelAwait",
+      "typescript",
+    ],
+  },
   plugins: [["react-intl", { ...options, extractSourceLocation: true }]],
 });
 
-export const extractMessages = (paths: string[], intlOptions?: IntlOptions) => {
+export function extractMessages(files: string[], ignore: string[], intlOptions: IntlOptions) {
   const options = createBabelOptions(intlOptions);
-  const extract = (path: string) => transformFileSync(path, options)?.metadata as ReactIntlMetadata;
-  return flatMap(paths, path => extract(path)["react-intl"].messages);
-};
+
+  return flatMap(
+    glob.sync(files, { ignore }),
+    p => (transformFileSync(p, options) as any).metadata["react-intl"].messages as Descriptor[]
+  );
+}

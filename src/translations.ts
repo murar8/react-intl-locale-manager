@@ -3,8 +3,8 @@ import { Descriptor } from "./extract";
 
 export type Translations = { [locale: string]: { [id: string]: string } };
 
-const updateMessages = (current: { [id: string]: string }, next: { [id: string]: string }) => {
-  return Object.keys(next).reduce((vs, v) => ({ ...vs, [v]: current[v] || next[v] }), {});
+const mergeMessages = (current: { [id: string]: string }, next: { [id: string]: string }) => {
+  return Object.keys(next).reduce((vs, v) => ({ ...vs, [v]: current[v] || next[v] || "" }), {});
 };
 
 export function updateTranslations(
@@ -15,7 +15,7 @@ export function updateTranslations(
   const next = messages.reduce((vs, v) => ({ ...vs, [v.id]: v.defaultMessage || "" }), {});
 
   return languages.reduce(
-    (ls, l) => ({ ...ls, [l]: current[l] ? updateMessages(current[l], next) : next }),
+    (ls, l) => ({ ...ls, [l]: current[l] ? mergeMessages(current[l], next) : next }),
     {}
   );
 }

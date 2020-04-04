@@ -1,8 +1,8 @@
 import {
-  updateTranslations,
   findDuplicates,
   getEmptyKeyStats,
   getTranslationStats,
+  updateTranslations,
 } from "./translations";
 
 describe("updateTranslations", () => {
