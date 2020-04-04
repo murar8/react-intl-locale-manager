@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/murar8/react-intl-locale-manager/compare/v1.1.2...v1.1.3) (2020-04-04)
+
+
+### Bug Fixes
+
+* import babel-plugin-react-intl directly ([22501af](https://github.com/murar8/react-intl-locale-manager/commit/22501af0e4da9e89f1f397aa27d36378b0802341))
+
 ## [1.1.2](https://github.com/murar8/react-intl-locale-manager/compare/v1.1.1...v1.1.2) (2020-04-04)
 
 

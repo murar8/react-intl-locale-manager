@@ -32,37 +32,10 @@ npm install --save react-intl-locale-manager
 
 ## Usage
 
+The best way to obtain information about the usage is to use the tool's internal help:
+
 ```bash
 locale-manager --help
-```
-
-```
-Usage: locale-manager [options] [files..]
-
-Positionals:
-  files  Files to be seached for translations. Every glob pattern in this list will be expanded.  [string]
-
-Options:
-  --help                              Show help  [boolean]
-  --version                           Show version number  [boolean]
-  -l, --languages                     Comma-separated list of language codes to support. A translation will be generated and mantained for every code in this list.  [string]
-  -f, --out-file                      Path to the file where the extracted messages will be output in a single JSON object grouped by locale.  [string]
-  -d, --out-dir                       Path to the directory where the extracted messages will be output generating a [locale].json file for each locale.  [string]
-  -i, --ignore                        Glob pattern designationg the files to exlcude from the translation process.To define more than one ignore pattern, just list the flag multiple times.  [string]
-  --module-source-name                The ES6 module source name of the React Intl package.  [string]
-  --additional-component-names        Comma separated list of component names to extract messages from. Note that default we check for the fact that 'FormattedMessage' is imported from '--module-source-name' to make sure variable alias works. This option does not do that so it's less safe.,  [string]
-  --extract-from-format-message-call  Opt-in to extract from 'intl.formatMessage' calls with the restriction that it has to be called with an object literal such as 'intl.formatMessage({ id: 'foo', ...})  [boolean]
-
-Examples:
-    $0 -l en,es -d ./locales -i src/**/*.test.js -i src/**/*.spec.js  src/**/*.js
-    $0 --extract-from-format-message-call -l en,es -f locales.json src/**/*.tsx
-
-For additional information, visit: https://github.com/murar8/react-intl-locale-manager
-
-```
-
-```bash
-locale-manager manage --help
 ```
 
 ```
