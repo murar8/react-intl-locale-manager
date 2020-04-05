@@ -1,12 +1,12 @@
 {
   "en": {
     "message1": "content 1",
-    "message2": "content 2",
-    "message3": "content 3"
+    "message2": "",
+    "message3": ""
   },
   "es": {
     "message1": "content 1",
-    "message2": "content 2",
-    "message3": "content 3"
+    "message2": "",
+    "message3": ""
   }
 }

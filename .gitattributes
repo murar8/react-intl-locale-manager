@@ -1,2 +1,2 @@
-README.md export-ignore
-CHANGELOG.md export-ignore
+README.md merge=theirs
+CHANGELOG.md merge=theirs

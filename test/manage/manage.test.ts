@@ -44,7 +44,7 @@ it("Should not extract messages from the paths defined in the --ignore option.",
 });
 
 it("Should pass extraction options to babel-plugin-react-intl.", () => {
-  const stdout = run("optional", [
+  run("optional", [
     "-l",
     "en,es",
     "-f",
@@ -57,8 +57,6 @@ it("Should pass extraction options to babel-plugin-react-intl.", () => {
     "./**/*.{js,ts,jsx,tsx}",
   ]);
 
-  console.log("stdout :", stdout.toString());
-
   expect(readJSONSync(path.join(TEST_DIR, "locales.json"))).toMatchSnapshot();
 });
 
@@ -67,8 +65,13 @@ it("Should merge existing translations with the extracted messages.", () => {
   expect(readJSONSync(path.join(TEST_DIR, "locales.json"))).toMatchSnapshot();
 });
 
-it("Should print information about the changes to console.", () => {
+it("Should print information about the changes to stdout.", () => {
   const stdout = run("changes", ["-l", "en,es", "-f", "locales.json", "./**/*.{js,ts,jsx,tsx}"]);
+  expect(stdout.toString()).toMatchSnapshot();
+});
+
+it("Should print information about empty translation keys to stdout.", () => {
+  const stdout = run("no_changes", ["-l", "en,es", "-f", "locales.json", "./**/*.{js,ts,jsx,tsx}"]);
   expect(stdout.toString()).toMatchSnapshot();
 });
 

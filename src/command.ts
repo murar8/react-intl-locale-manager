@@ -18,15 +18,14 @@ export const manageCommand: CommandModule = {
   command: "$0 [files..]",
 
   describe: inlined`Manage the translation process of projects that use the react-intl 
-                    translation library. This tool will extract react-intl messages into key-value 
-                    pairs of id and message that can be imported directly in code and passed to 
-                    the 'IntlProvider' component. Additonally, existing translations will be merged
-                    with the extracted messages and information about the changes will be printed 
-                    to console.`,
+                translation library. This tool will extract react-intl messages into key-value 
+                pairs of id and message that can be imported directly in code and passed to 
+                the 'IntlProvider' component. Additonally, existing translations will be merged
+                with the extracted messages and information about the changes will be printed 
+                to console.`,
 
   builder: yargs =>
     yargs
-      .usage("Usage: $0 [options] [files..]")
       .example("", "$0 -l en,es -d ./locales -i src/**/*.test.js -i src/**/*.spec.js  src/**/*.js")
       .example("", "$0 --extract-from-format-message-call -l en,es -f locales.json src/**/*.tsx")
       .epilogue(
@@ -42,13 +41,13 @@ export const manageCommand: CommandModule = {
       .option("f", {
         type: "string",
         alias: "out-file",
-        describe: inlined`Path to the file where the extracted messages will be output 
+        describe: inlined`Path to the file where the extracted messages will be stored 
                           in a single JSON object grouped by locale.`,
       })
       .option("d", {
         type: "string",
         alias: "out-dir",
-        describe: inlined`Path to the directory where the extracted messages will be output 
+        describe: inlined`Path to the directory where the extracted messages will be stored 
                           generating a [locale].json file for each locale.`,
       })
       .option("i", {
@@ -76,10 +75,10 @@ export const manageCommand: CommandModule = {
                           that it has to be called with an object literal 
                           such as 'intl.formatMessage({ id: 'foo', ...})`,
       })
-      .positional("files", {
+      .positional("[files..]", {
         type: "string",
-        describe: inlined`Files to be seached for translations. Every glob pattern in this list
-                          will be expanded.`,
+        describe: inlined`Space separated list of paths to be scanned for translations. 
+                          Can contain glob patterns.`,
       }),
 
   handler: args => {
