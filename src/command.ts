@@ -26,8 +26,8 @@ export const manageCommand: CommandModule = {
 
   builder: yargs =>
     yargs
-      .example("", "$0 -l en,es -d ./locales -i src/**/*.test.js -i src/**/*.spec.js  src/**/*.js")
-      .example("", "$0 --extract-from-format-message-call -l en,es -f locales.json src/**/*.tsx")
+      .example("$0 -l en,es -d ./locales -i src/**/*.test.js src/**/*.js", "")
+      .example("$0 -l it,de -f locales.json src/**/*.{js,tsx}", "")
       .epilogue(
         "For additional information, visit: https://github.com/murar8/react-intl-locale-manager"
       )

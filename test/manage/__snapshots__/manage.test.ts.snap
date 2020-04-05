@@ -171,9 +171,8 @@ Options:
                                                                        [boolean]
 
 Examples:
-    $0 -l en,es -d ./locales -i src/**/*.test.js -i src/**/*.spec.js
-    src/**/*.js
-    $0 --extract-from-format-message-call -l en,es -f locales.json src/**/*.tsx
+  locale-manager -l en,es -d ./locales -i src/**/*.test.js src/**/*.js
+  locale-manager -l it,de -f locales.json src/**/*.{js,tsx}
 
 For additional information, visit:
 https://github.com/murar8/react-intl-locale-manager
