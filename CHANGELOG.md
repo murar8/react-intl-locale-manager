@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/murar8/react-intl-locale-manager/compare/v1.1.4...v1.1.5) (2020-04-05)
+
+
+### Bug Fixes
+
+* remove typos in help ([c892d19](https://github.com/murar8/react-intl-locale-manager/commit/c892d19a46777c823f7e1f3e0425371a0c6f1ba3))
+
 ## [1.1.4](https://github.com/murar8/react-intl-locale-manager/compare/v1.1.3...v1.1.4) (2020-04-05)
 
 

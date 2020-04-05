@@ -77,13 +77,13 @@ Options:
                                       messages will be stored generating a
                                       [locale].json file for each locale.
                                                                         [string]
-  -i, --ignore                        Glob pattern designationg the files to
+  -i, --ignore                        Glob pattern designating the files to
                                       exlcude from the translation process.To
                                       define more than one ignore pattern, just
                                       list the flag multiple times.     [string]
   --module-source-name                The ES6 module source name of the React
                                       Intl package.                     [string]
-  --additional-component-names        Comma separated list of component names to
+  --additional-component-names        Comma-separated list of component names to
                                       extract messages from. Note that default
                                       we check for the fact that
                                       'FormattedMessage' is imported from
