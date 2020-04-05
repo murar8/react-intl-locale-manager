@@ -24,7 +24,7 @@ jobs:
         with:
           path: node_modules
           key: node_modules-cache-${{ hashFiles('**/yarn.lock') }}
-          restore-key: node_modules-cache-
+          restore-keys: node_modules-cache-
 
       - name: Get yarn cache directory
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -93,7 +93,7 @@ jobs:
         with:
           path: node_modules
           key: node_modules-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-          restore-key: node_modules-cache-${{ runner.os }}-
+          restore-keys: node_modules-cache-${{ runner.os }}-
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
