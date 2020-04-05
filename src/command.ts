@@ -53,7 +53,7 @@ export const manageCommand: CommandModule = {
       .option("i", {
         type: "string",
         alias: "ignore",
-        describe: inlined`Glob pattern designationg the files to exlcude from the translation 
+        describe: inlined`Glob pattern designating the files to exlcude from the translation 
                           process.To define more than one ignore pattern, just list the flag 
                           multiple times.`,
       })
@@ -64,7 +64,7 @@ export const manageCommand: CommandModule = {
       .option("additional-component-names", {
         type: "string",
         coerce: (v: string) => v.split(",").filter(Boolean),
-        describe: inlined`Comma separated list of component names to extract messages from.
+        describe: inlined`Comma-separated list of component names to extract messages from.
                           Note that default we check for the fact that 'FormattedMessage'
                           is imported from '--module-source-name' to make sure variable alias
                           works. This option does not do that so it's less safe.,`,
