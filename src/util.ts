@@ -23,7 +23,10 @@ export function readJsonFromDir(dir: string): any {
   if (!pathExistsSync(dir)) return {};
 
   return readdirSync(dir, { withFileTypes: true }).reduce(
-    (files, { name }) => ({ ...files, [path.basename(name, ".json")]: readJsonFromFile(name) }),
+    (files, { name }) => ({
+      ...files,
+      [path.basename(name, ".json")]: readJsonFromFile(path.join(dir, name)),
+    }),
     {}
   );
 }

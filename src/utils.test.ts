@@ -67,10 +67,13 @@ describe("readJsonFromDir", () => {
     (readJsonSync as jest.Mock).mockReturnValueOnce({ v: 3 });
 
     expect(readJsonFromDir("path/a")).toEqual({ a: { v: 1 }, b: { v: 2 }, c: { v: 3 } });
+    expect(readJsonSync).toHaveBeenNthCalledWith(1, "path/a/a.json");
+    expect(readJsonSync).toHaveBeenNthCalledWith(2, "path/a/b.json");
+    expect(readJsonSync).toHaveBeenNthCalledWith(3, "path/a/c.json");
   });
 });
 
-describe("readJsonFromDir", () => {
+describe("writeJsonToDir", () => {
   it("Should write each entry in the input object to a file.", () => {
     writeJsonToDir("path/a", { a: { v: 1 }, b: { v: 2 }, c: { v: 3 } });
 
