@@ -107,19 +107,21 @@ jobs:
       matrix:
         node:
           - 10
-          - 12.x
+          - latest
 
     name: integration-tests-node-${{ matrix.node }}
 
     runs-on: ubuntu-latest
+    container:
+      image: node:${{ matrix.node }}
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Setup node
-        uses: actions/setup-node@v1.1.0
-        with: { version: "${{ matrix.node }}" }
+      # - name: Setup node
+      #   uses: actions/setup-node@v1.1.0
+      #   with: { version: "${{ matrix.node }}" }
 
       - name: Restore node_modules
         uses: actions/cache@v1

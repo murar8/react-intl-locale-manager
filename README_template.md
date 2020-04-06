@@ -39,7 +39,7 @@ yarn add --dev react-intl-locale-manager
 
 ## Demo
 
-<img src="demo.svg">
+<img src="https://raw.github.com/murar8/react-intl-locale-manager/master/demo.svg?sanitize=true">
 
 ## Usage
 
