@@ -1,3 +1,10 @@
+## [1.1.7](https://github.com/murar8/react-intl-locale-manager/compare/v1.1.6...v1.1.7) (2020-04-06)
+
+
+### Bug Fixes
+
+* remove unused translation files ([1f8dc8a](https://github.com/murar8/react-intl-locale-manager/commit/1f8dc8a21169446965a15d97426d5ce98feb00df))
+
 ## [1.1.6](https://github.com/murar8/react-intl-locale-manager/compare/v1.1.5...v1.1.6) (2020-04-06)
 
 
