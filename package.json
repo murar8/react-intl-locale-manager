@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "react-intl-locale-manager",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Manage the translation process of projects that use the 'react-intl' translation library.",
   "repository": "https://github.com/murar8/react-intl-locale-manager",
   "author": "Lorenzo Murarotto <lnzmrr@gmail.com>",

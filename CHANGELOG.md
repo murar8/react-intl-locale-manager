@@ -1,3 +1,10 @@
+## [1.1.6](https://github.com/murar8/react-intl-locale-manager/compare/v1.1.5...v1.1.6) (2020-04-06)
+
+
+### Bug Fixes
+
+* **util:** fix readJsonFromDir path resolution ([e1b0e43](https://github.com/murar8/react-intl-locale-manager/commit/e1b0e43a320242400db75e91ef4c28bdff815f8a))
+
 ## [1.1.5](https://github.com/murar8/react-intl-locale-manager/compare/v1.1.4...v1.1.5) (2020-04-05)
 
 
