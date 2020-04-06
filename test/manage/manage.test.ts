@@ -1,5 +1,5 @@
 import { execSync } from "child_process";
-import { copySync, readJSONSync, removeSync } from "fs-extra";
+import { copySync, readJSONSync, removeSync, existsSync } from "fs-extra";
 import path from "path";
 
 const BIN = path.join(__dirname, "../../bin/locale-manager");
@@ -63,6 +63,16 @@ it("Should pass extraction options to babel-plugin-react-intl.", () => {
 it("Should merge existing translations with the extracted messages.", () => {
   run("changes", ["-l", "en,es", "-f", "locales.json", "./**/*.{js,ts,jsx,tsx}"]);
   expect(readJSONSync(path.join(TEST_DIR, "locales.json"))).toMatchSnapshot();
+});
+
+it("Should remove unused translation files.", () => {
+  run("changes_dir", ["-l", "en,es", "-d", "locales", "./**/*.{js,ts,jsx,tsx}"]);
+  expect(existsSync(path.join(TEST_DIR, "locales", "de.json"))).toBeFalsy();
+});
+
+it("Should NOT print information about added ids in newly added translations.", () => {
+  const stdout = run("changes_dir", ["-l", "en,es", "-d", "locales", "./**/*.{js,ts,jsx,tsx}"]);
+  expect(stdout.toString()).toMatchSnapshot();
 });
 
 it("Should print information about the changes to stdout.", () => {

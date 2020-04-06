@@ -15,6 +15,7 @@ import {
   writeJsonToDir,
   writeJsonToFile,
 } from "./util";
+import { removeSync } from "fs-extra";
 
 export const manage = ({
   files = [],
@@ -26,6 +27,8 @@ export const manage = ({
 }: ManageCommandArgs) => {
   const messages = extractMessages(files, ignore, extractOpts);
   const translations = outFile ? readJsonFromFile(outFile) : outDir ? readJsonFromDir(outDir) : {};
+
+  if (outDir) removeSync(outDir);
 
   const nextTranslations = updateTranslations(translations, messages, languages);
 

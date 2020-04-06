@@ -1,5 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Should NOT print information about added ids in newly added translations. 1`] = `
+" Added 2 keys: 
+  message4
+  message5
+
+ Removed 2 keys: 
+  message6
+  message7
+
+ Added 1 locales: 
+  es
+
+ Removed 1 locales: 
+  de
+
+"
+`;
+
 exports[`Should merge existing translations with the extracted messages. 1`] = `
 Object {
   "en": Object {
