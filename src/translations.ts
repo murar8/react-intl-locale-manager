@@ -1,4 +1,4 @@
-import { difference, groupBy, intersection, union } from "lodash";
+import { difference, groupBy, intersection, union, pick } from "lodash";
 import { Descriptor } from "./extract";
 
 export type Translations = { [locale: string]: { [id: string]: string } };
@@ -45,15 +45,16 @@ export type TranslationStats = {
 };
 
 export function getTranslationStats(current: Translations, next: Translations): TranslationStats {
-  const getCommonIds = (t: Translations) => intersection(...Object.values(t).map(Object.keys));
-  const getAllIds = (t: Translations) => union(...Object.values(t).map(Object.keys));
-
   const currentLocales = Object.keys(current);
   const nextLocales = Object.keys(next);
+  const commonLocales = intersection(currentLocales, nextLocales);
+
+  const getIds = (t: Translations) =>
+    union(...Object.values(pick(t, commonLocales)).map(Object.keys));
 
   return {
-    addedIds: difference(getCommonIds(next), getCommonIds(current)),
-    removedIds: difference(getAllIds(current), getAllIds(next)),
+    addedIds: difference(getIds(next), getIds(current)),
+    removedIds: difference(getIds(current), getIds(next)),
     addedLocales: difference(nextLocales, currentLocales),
     removedLocales: difference(currentLocales, nextLocales),
   };

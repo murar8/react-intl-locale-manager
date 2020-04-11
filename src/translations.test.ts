@@ -122,21 +122,50 @@ describe("getEmptyKeysCount", () => {
 });
 
 describe("getTranslationStats", () => {
-  it("Should return statistics about the translations.", () => {
+  it("Should extract information about the changes betwen translations.", () => {
     expect(
       getTranslationStats(
-        { en: { a: "1", b: "2" }, es: { a: "1", b: "2" }, hk: { f: "0", a: "1", b: "2" } },
+        { en: { a: "1", b: "2", q: "3" }, es: { a: "1", b: "2" } },
         {
-          en: { b: "2", c: "3", d: "4" },
+          en: { b: "2", c: "3", d: "4", e: "5" },
           de: { b: "2", c: "3", d: "4" },
-          nl: { b: "2", c: "3", d: "4" },
         }
       )
     ).toEqual({
+      addedIds: ["c", "d", "e"],
+      removedIds: ["a", "q"],
+      addedLocales: ["de"],
+      removedLocales: ["es"],
+    });
+  });
+
+  it("Should NOT extract statistics from removed locales.", () => {
+    expect(
+      getTranslationStats(
+        { en: { a: "1", b: "2" }, es: { a: "1", b: "2", c: "3" } },
+        {
+          en: { b: "2", c: "3", d: "4" },
+          de: { b: "2", c: "3", d: "4" },
+        }
+      )
+    ).toMatchObject({
       addedIds: ["c", "d"],
-      removedIds: ["a", "f"],
-      addedLocales: ["de", "nl"],
-      removedLocales: ["es", "hk"],
+      removedIds: ["a"],
+    });
+  });
+
+  it("Should NOT extract statistics from newly added locales.", () => {
+    expect(
+      getTranslationStats(
+        { en: { a: "1", b: "2" } },
+        {
+          en: { a: "1", b: "2" },
+          de: { a: "1", b: "2" },
+        }
+      )
+    ).toMatchObject({
+      addedIds: [],
+      removedIds: [],
     });
   });
 });
