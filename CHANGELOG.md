@@ -1,3 +1,10 @@
+## [1.1.8](https://github.com/murar8/react-intl-locale-manager/compare/v1.1.7...v1.1.8) (2020-04-11)
+
+
+### Bug Fixes
+
+* **translations:** don't extract stats from added and removed files ([d711e0a](https://github.com/murar8/react-intl-locale-manager/commit/d711e0a6f67ac3068bbb5aed70518d7d332c3d2a))
+
 ## [1.1.7](https://github.com/murar8/react-intl-locale-manager/compare/v1.1.6...v1.1.7) (2020-04-06)
 
 
